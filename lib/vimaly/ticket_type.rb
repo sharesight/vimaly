@@ -1,4 +1,4 @@
-module Obeya
+module Vimaly
   class TicketType
 
     attr_reader :id, :name

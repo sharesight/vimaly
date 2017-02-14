@@ -1,5 +1,5 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'obeya'
+require 'vimaly'
 
 require 'maxitest/autorun'
 require 'shoulda-context'

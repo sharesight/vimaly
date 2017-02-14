@@ -1,4 +1,4 @@
-# To run integration tests, copy me to obeya_config.rb and put details below
+# To run integration tests, copy me to vimaly_config.rb and put details below
 COMPANY_ID='your company id'
 USERNAME='your username'
 PASSWORD='your password'

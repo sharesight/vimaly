@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in obeya.gemspec
+# Specify your gem's dependencies in vimaly.gemspec
 gemspec

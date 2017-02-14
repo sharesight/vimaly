@@ -1,4 +1,4 @@
-module Obeya
+module Vimaly
   class Bin
 
     attr_reader :id, :name

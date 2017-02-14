@@ -13,4 +13,4 @@
 .idea/
 
 # Ignore company specific test config
-test/integration/obeya_config.rb
+test/integration/vimaly_config.rb

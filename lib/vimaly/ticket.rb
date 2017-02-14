@@ -1,4 +1,4 @@
-module Obeya
+module Vimaly
   class Ticket
 
     # title, description, format, ticket_type, bin, id=nil
@@ -14,10 +14,10 @@ module Obeya
       end
     end
 
-    def self.from_obeya(src_hash, ticket_types, bins, custom_fields)
+    def self.from_vimaly(src_hash, ticket_types, bins, custom_fields)
       ticket_fields = Hash[
-        src_hash.map do |obeya_name, field_value|
-          case(obeya_name)
+        src_hash.map do |vimaly_name, field_value|
+          case(vimaly_name)
             when 'rtformat'
               [:format, field_value]
             when 'name'
@@ -29,7 +29,7 @@ module Obeya
             when 'customFields'
               nil
             else
-              [obeya_name.to_sym, field_value]
+              [vimaly_name.to_sym, field_value]
           end
         end.compact
       ]
@@ -38,11 +38,11 @@ module Obeya
         ticket_fields[custom_fields[custom_field_id][:name]] = value
       end
 
-      Obeya::Ticket::new(ticket_fields)
+      Vimaly::Ticket::new(ticket_fields)
     end
 
-    def to_obeya(custom_field_name_map, for_update=false)
-      obeya_fields = Hash[@ticket_fields.map do |field_name, field_value|
+    def to_vimaly(custom_field_name_map, for_update=false)
+      vimaly_fields = Hash[@ticket_fields.map do |field_name, field_value|
         case(field_name)
           when :format
             ['rtformat', field_value]
@@ -57,7 +57,7 @@ module Obeya
           else
             if for_update
               fdef = custom_field_name_map[field_name.to_s]
-              ["customFields.#{fdef[:id]}", cast_to_obeya(field_value, fdef[:type])]
+              ["customFields.#{fdef[:id]}", cast_to_vimaly(field_value, fdef[:type])]
             else
               nil
             end
@@ -68,18 +68,18 @@ module Obeya
       unless for_update
         custom_fields = @ticket_fields.select {|fn, _v| ![:format, :title, :description, :ticket_type, :bin].include?(fn) }
         if custom_fields && !custom_fields.empty?
-          obeya_fields['customFields'] =
+          vimaly_fields['customFields'] =
             Hash[custom_fields.map do |field_name, field_value|
               fdef = custom_field_name_map[field_name.to_s]
-              [fdef[:id], cast_to_obeya(field_value, fdef[:type])]
+              [fdef[:id], cast_to_vimaly(field_value, fdef[:type])]
             end]
         end
       end
 
-      obeya_fields
+      vimaly_fields
     end
 
-    def cast_to_obeya(value, type)
+    def cast_to_vimaly(value, type)
       case type.to_s
         when 'String'
           value.to_s
@@ -95,7 +95,7 @@ module Obeya
     end
 
     def to_json(custom_field_name_map, for_update=false)
-      to_obeya(custom_field_name_map, for_update).to_json
+      to_vimaly(custom_field_name_map, for_update).to_json
     end
 
     def [](name)

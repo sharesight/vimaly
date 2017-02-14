@@ -1,17 +1,17 @@
-# Obeya
+# Vimaly
 
-[![Gem Version](https://badge.fury.io/rb/obeya.svg)](http://badge.fury.io/rb/obeya)
-[![Build Status](https://travis-ci.org/sharesight/obeya.svg?branch=master)](https://travis-ci.org/sharesight/obeya)
+[![Gem Version](https://badge.fury.io/rb/vimaly.svg)](http://badge.fury.io/rb/vimaly)
+[![Build Status](https://travis-ci.org/sharesight/vimaly.svg?branch=master)](https://travis-ci.org/sharesight/vimaly)
 
-The `obeya` gem provides a wrapper around the
-[Obeya API](https://beta.getobeya.com/public/rest-help.html)
+The `vimaly` gem provides a wrapper around the
+[Vimaly API](https://vimaly.com/public/rest-help.html)
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'obeya'
+gem 'vimaly'
 ```
 
 And then execute:
@@ -20,7 +20,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install obeya
+    $ gem install vimaly
 
 ## Usage
 
@@ -34,7 +34,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/sharesight/obeya. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/sharesight/vimaly. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 ## License

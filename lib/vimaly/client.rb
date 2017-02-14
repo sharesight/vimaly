@@ -2,10 +2,10 @@ require 'faraday'
 require 'faraday_middleware'
 require 'date'
 
-module Obeya
+module Vimaly
   class Client
 
-    OBEYA_ROOT_URL = "https://beta.getobeya.com"
+    VIMALY_ROOT_URL = "https://o1.vimaly.com"
     CUSTOM_FIELD_TYPES = [::NilClass, ::String, ::Float, ::Integer, ::Array, ::Date]
 
     def initialize(company_id, username, password, logger=nil)
@@ -99,7 +99,7 @@ module Obeya
 
       @bin_tickets[bin_id] ||= begin
         get("/tickets?bin_id=#{bin_id}").map do |ticket_data|
-          Ticket.from_obeya(ticket_data, ticket_type_map, bin_map, custom_fields)
+          Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
         end
       end
     end
@@ -144,7 +144,7 @@ module Obeya
         request.headers.update({ accept: 'application/json', content_type: 'application/json' })
       end
       unless response.success?
-        raise("Obeya #{api_path} call failed")
+        raise("Vimaly #{api_path} call failed")
       end
       JSON.parse(response.body)
     end
@@ -162,7 +162,7 @@ module Obeya
     end
 
     def faraday
-      @faraday ||= Faraday.new(OBEYA_ROOT_URL).tap do |connection|
+      @faraday ||= Faraday.new(VIMALY_ROOT_URL).tap do |connection|
         connection.basic_auth(@username, @password)
         connection.request(:json)
       end

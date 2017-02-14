@@ -1,17 +1,17 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'obeya/version'
+require 'vimaly/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "obeya"
-  spec.version       = Obeya::VERSION
+  spec.name          = "vimaly"
+  spec.version       = Vimaly::VERSION
   spec.authors       = ["Thorsten Boettger"]
   spec.email         = ["boettger@mt7.de"]
 
-  spec.summary       = %q{Wrapper for the Obeya API}
-  spec.description   = %q{Wrapper for the Obeya API}
-  spec.homepage      = "https://github.com/sharesight/obeya"
+  spec.summary       = %q{Wrapper for the Vimaly API}
+  spec.description   = %q{Wrapper for the Vimaly API}
+  spec.homepage      = "https://github.com/sharesight/vimaly"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
