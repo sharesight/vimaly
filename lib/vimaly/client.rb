@@ -30,8 +30,8 @@ module Vimaly
       ticket_to_json = ticket.to_json(custom_field_name_map)
       response = post("/tickets/#{next_ticket_id}", ticket_to_json)
       case response.status
-      when 200..299
-        true
+        when 200..299
+          true
       else
         log_warn "status: #{response.status}"
         log_warn "        #{response.inspect}"
@@ -40,7 +40,7 @@ module Vimaly
     end
 
     def update_ticket(id, other_fields)
-      ticket = Ticket.new(other_fields)
+        ticket = Ticket.new(other_fields)
 
       response = put("/tickets/#{id}", ticket.to_json(custom_field_name_map, true))
       case response.status
@@ -97,11 +97,10 @@ module Vimaly
       ticket_type_map = Hash[ticket_types.map { |t| [t.id, t] }]
       bin_map = Hash[bins.map { |b| [b.id, b] }]
 
-      @bin_tickets[bin_id] ||= begin
-        get("/tickets?bin_id=#{bin_id}").map do |ticket_data|
-          Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
-        end
+      get("/tickets?bin_id=#{bin_id}").map do |ticket_data|
+        Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
       end
+
     end
 
     def matching_tickets_in_named_bin(bin_name, title_matcher)
@@ -144,7 +143,7 @@ module Vimaly
         request.headers.update({ accept: 'application/json', content_type: 'application/json' })
       end
       unless response.success?
-        raise("Vimaly #{api_path} call failed")
+        raise("Vimaly #{api_path} call failed with response #{response.status}")
       end
       JSON.parse(response.body)
     end

@@ -33,7 +33,7 @@ class RoundTripTest < Minitest::Test
 
       should 'find our bin by regex' do
         skip unless @do_tests
-        bin = @vimaly.bin(/Admin/)
+        bin = @vimaly.bin(/TestAdmin/)
         assert_equal 'TestAdmin', bin.name
       end
     end
@@ -60,11 +60,33 @@ class RoundTripTest < Minitest::Test
         assert_equal 1, tickets.size
         assert_equal title, tickets.first.title
         assert_equal 'Integration test ticket', tickets.first.description
-        assert_equal '2016-08-01', tickets.first['Last seen']
+        assert_equal '2016-08-01', tickets.first['Last seen'].to_s
 
         @vimaly.update_ticket tickets.first._id, description: 'Updated test ticket', 'Last seen': Date.new(2016,8,2)
 
         @vimaly = ::Vimaly::Client.new(COMPANY_ID, USERNAME, PASSWORD)  # clear cache
+        tickets = @vimaly.matching_tickets_in_named_bin('TestAdmin', title)
+        assert_equal 1, tickets.size
+        assert_equal title, tickets.first.title
+        assert_equal 'Updated test ticket', tickets.first.description
+        assert_equal '2016-08-02', tickets.first['Last seen'].to_s
+      end
+
+      should 'desist from spamming vimaly when multiple duplicate tickets created in a request' do
+        skip unless @do_tests
+
+        title = "#{DateTime.now.to_s} Integration test 2"
+        @vimaly.create_ticket title, 'Integration test ticket 2', ticket_type_name: 'Incident', bin_name: 'TestAdmin',
+                              'Last seen': Date.new(2016,8,1)
+
+        tickets = @vimaly.matching_tickets_in_named_bin('TestAdmin', title)
+        assert_equal 1, tickets.size
+        assert_equal title, tickets.first.title
+        assert_equal 'Integration test ticket 2', tickets.first.description
+        assert_equal '2016-08-01', tickets.first['Last seen']
+
+        @vimaly.update_ticket tickets.first._id, description: 'Updated test ticket', 'Last seen': Date.new(2016,8,2)
+
         tickets = @vimaly.matching_tickets_in_named_bin('TestAdmin', title)
         assert_equal 1, tickets.size
         assert_equal title, tickets.first.title

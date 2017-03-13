@@ -1,12 +1,14 @@
+require "active_support/core_ext/hash/indifferent_access"
+
 module Vimaly
   class Ticket
 
     # title, description, format, ticket_type, bin, id=nil
     def initialize(*params)
       if params.first.is_a?(Hash)
-        @ticket_fields = params.first
+        @ticket_fields = HashWithIndifferentAccess.new(params.first)
       else
-        @ticket_fields = {}
+        @ticket_fields = HashWithIndifferentAccess.new
         [:title, :description, :format, :ticket_type, :bin, :id].each_with_index do |param_key, idx|
           break if idx>=params.size
           @ticket_fields[param_key] = params[idx]
@@ -44,19 +46,22 @@ module Vimaly
     def to_vimaly(custom_field_name_map, for_update=false)
       vimaly_fields = Hash[@ticket_fields.map do |field_name, field_value|
         case(field_name)
-          when :format
+          when 'id'
+            nil   # id should not be in ticket body
+          when 'format'
             ['rtformat', field_value]
-          when :title
+          when 'title'
             ['name', field_value]
-          when :description
+          when 'description'
             ['description', normalise(field_value)]
-          when :ticket_type
+          when 'ticket_type'
             ['ticketType_id', field_value.id]
-          when :bin
+          when 'bin'
             ['bin_id', field_value.id]
           else
             if for_update
-              fdef = custom_field_name_map[field_name.to_s]
+              fdef = custom_field_name_map[field_name]
+              raise "Field type #{field_name} is not a defined custom or standard field in Vimaly" unless fdef
               ["customFields.#{fdef[:id]}", cast_to_vimaly(field_value, fdef[:type])]
             else
               nil
@@ -66,7 +71,7 @@ module Vimaly
       ]
 
       unless for_update
-        custom_fields = @ticket_fields.select {|fn, _v| ![:format, :title, :description, :ticket_type, :bin].include?(fn) }
+        custom_fields = @ticket_fields.select {|fn, _v| ![:format, :title, :description, :ticket_type, :bin].include?(fn.to_sym) }
         if custom_fields && !custom_fields.empty?
           vimaly_fields['customFields'] =
             Hash[custom_fields.map do |field_name, field_value|
@@ -98,6 +103,11 @@ module Vimaly
       to_vimaly(custom_field_name_map, for_update).to_json
     end
 
+    def add_id(id)
+      raise "Ticket already has id #{@ticket_fields[:'_id']} and we try and add #{id}" if @ticket_fields[:'_id']
+      @ticket_fields['_id'] = id
+    end
+
     def [](name)
       @ticket_fields[name]
     end
@@ -106,6 +116,10 @@ module Vimaly
       return @ticket_fields[name] if @ticket_fields.key?(name)
 
       super
+    end
+
+    def update_fields(fields)
+      @ticket_fields.merge!(fields)
     end
 
     private
