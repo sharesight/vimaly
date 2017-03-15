@@ -37,7 +37,8 @@ module Vimaly
       ]
 
       (src_hash['customFields'] || []).each do |custom_field_id, value|
-        ticket_fields[custom_fields[custom_field_id][:name]] = value
+        raise "Vimaly inconsistent: custom field id #{custom_field_id.inspect} in response but not defined" unless custom_fields.key?(custom_field_id.to_s)
+        ticket_fields[custom_fields[custom_field_id.to_s][:name]] = value
       end
 
       Vimaly::Ticket::new(ticket_fields)

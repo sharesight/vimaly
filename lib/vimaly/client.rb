@@ -123,7 +123,7 @@ module Vimaly
     def custom_fields
       @custom_fields ||= begin
         Hash[get('/custom-fields').map do |cf|
-          [cf['_id'], { id: cf['_id'], name: cf['name'], type: CUSTOM_FIELD_TYPES[cf['type'].to_i] }]
+          [cf['_id'].to_s, { id: cf['_id'], name: cf['name'], type: CUSTOM_FIELD_TYPES[cf['type'].to_i] }]
         end]
       end
     end
