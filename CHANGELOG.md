@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.2.2 (not yet released)
+## 0.2.2
 
  * handle Bad Gateway 502 errors
 
