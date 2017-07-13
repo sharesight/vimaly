@@ -39,6 +39,20 @@ class ClientTest < Minitest::Test
       )
     end
 
+    should "handle bad gateway errors" do
+      stub_ticket_types(status: 502)
+
+      assert_raises Vimaly::ConnectionError do
+        @client.create_ticket(
+          'title',
+          'description',
+          format: 'text',
+          ticket_type_name: 'bug',
+          bin_name: /alpha/i
+        )
+      end
+    end
+
     should "succeed with defaulted params" do
       stub_create_ticket
 
@@ -202,10 +216,13 @@ class ClientTest < Minitest::Test
     )
   end
 
-  def stub_ticket_types
-    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/ticket-types").to_return(
+  def stub_ticket_types(overrides={})
+    default_response = {
       status: 200,
       body: [{name: 'bug', _id: 1}, {name: 'feature', _id: 2}]
+    }
+    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/ticket-types").to_return(
+      default_response.merge(overrides)
     )
   end
 

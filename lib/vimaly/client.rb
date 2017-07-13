@@ -30,8 +30,8 @@ module Vimaly
       ticket_to_json = ticket.to_json(custom_field_name_map)
       response = post("/tickets/#{next_ticket_id}", ticket_to_json)
       case response.status
-        when 200..299
-          true
+      when 200..299
+        true
       else
         log_warn "status: #{response.status}"
         log_warn "        #{response.inspect}"
@@ -40,16 +40,16 @@ module Vimaly
     end
 
     def update_ticket(id, other_fields)
-        ticket = Ticket.new(other_fields)
+      ticket = Ticket.new(other_fields)
 
       response = put("/tickets/#{id}", ticket.to_json(custom_field_name_map, true))
       case response.status
-        when 200..299
-          true
-        else
-          log_warn "status: #{response.status}"
-          log_warn "        #{response.inspect}"
-          false
+      when 200..299
+        true
+      else
+        log_warn "status: #{response.status}"
+        log_warn "        #{response.inspect}"
+        false
       end
     end
 
@@ -143,7 +143,7 @@ module Vimaly
         request.headers.update({ accept: 'application/json', content_type: 'application/json' })
       end
       unless response.success?
-        raise("Vimaly #{api_path} call failed with response #{response.status}")
+        raise Vimaly::ConnectionError.new("Vimaly #{api_path} call failed with response #{response.status}")
       end
       JSON.parse(response.body)
     end
