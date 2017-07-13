@@ -143,7 +143,7 @@ module Vimaly
         request.headers.update({ accept: 'application/json', content_type: 'application/json' })
       end
       unless response.success?
-        raise("Vimaly #{api_path} call failed with response #{response.status}")
+        raise Vimaly::ConnectionError.new("Vimaly #{api_path} call failed with response #{response.status}")
       end
       JSON.parse(response.body)
     end
