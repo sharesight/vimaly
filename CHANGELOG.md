@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.3
+
+ * Ruby 2.4 support
+
 ## 0.2.2
 
  * handle Bad Gateway 502 errors
