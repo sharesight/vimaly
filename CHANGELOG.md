@@ -1,8 +1,12 @@
 # CHANGELOG
 
-## 0.2.3
+## 0.2.4
 
- * Ruby 2.4 support
+ * Ruby 2.4.2 support
+
+ ## 0.2.3
+
+  * Ruby 2.4.1 support
 
 ## 0.2.2
 
