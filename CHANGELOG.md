@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.5
+
+ * Ruby 2.5.0 support
+
 ## 0.2.4
 
  * Ruby 2.4.2 support
