@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.3.0
+
+ * ask for more bins [#8](https://github.com/sharesight/vimaly/pull/8)
+
 ## 0.2.5
 
  * Ruby 2.5.0 support
