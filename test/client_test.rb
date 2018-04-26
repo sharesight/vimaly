@@ -210,7 +210,7 @@ class ClientTest < Minitest::Test
   private
 
   def stub_bins
-    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/bins").to_return(
+    stub_request(:get, %r{#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/bins}).to_return(
       status: 200,
       body: [{name: 'Alpha', _id: 1}, {name: 'Beta', _id: 2}]
     )

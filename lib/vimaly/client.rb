@@ -64,7 +64,7 @@ module Vimaly
 
     def bins
       @bins ||= begin
-        get('/bins').map do |bin_data|
+        get('/bins?max-results=500').map do |bin_data|
           Bin.new(bin_data['_id'], bin_data['name'])
         end
       end
