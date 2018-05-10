@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.3.1
+
+ * use Ruby `2.5.1` [#9](https://github.com/sharesight/vimaly/pull/9)
+
 ## 0.3.0
 
  * ask for more bins [#8](https://github.com/sharesight/vimaly/pull/8)
