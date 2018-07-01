@@ -20,7 +20,7 @@ class RoundTripTest < Minitest::Test
 
       WebMock.allow_net_connect!
 
-      @vimaly = ::Vimaly::Client.new(COMPANY_ID, USERNAME, PASSWORD) if @do_tests
+      @vimaly = ::Vimaly::Client.new(COMPANY_ID, user_credentials: { username: USERNAME, password: PASSWORD }) if @do_tests
     end
 
     context 'bin method' do
@@ -64,7 +64,7 @@ class RoundTripTest < Minitest::Test
 
         @vimaly.update_ticket tickets.first._id, description: 'Updated test ticket', 'Last seen': Date.new(2016,8,2)
 
-        @vimaly = ::Vimaly::Client.new(COMPANY_ID, USERNAME, PASSWORD)  # clear cache
+        @vimaly = ::Vimaly::Client.new(COMPANY_ID, user_credentials: { username: USERNAME, password: PASSWORD }) # clear cache
         tickets = @vimaly.matching_tickets_in_named_bin('TestAdmin', title)
         assert_equal 1, tickets.size
         assert_equal title, tickets.first.title

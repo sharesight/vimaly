@@ -24,7 +24,7 @@ class ClientTest < Minitest::Test
       stub_next_ticket_id
       stub_custom_fields
 
-      @client = Vimaly::Client.new('company_id', 'username', 'password')
+      @client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
     end
 
     should "succeed for standard params" do
@@ -85,7 +85,7 @@ class ClientTest < Minitest::Test
       stub_custom_fields
       stub_create_ticket
 
-      @client = Vimaly::Client.new('company_id', 'username', 'password')
+      @client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
 
       @client.create_ticket(
           'title',
@@ -123,7 +123,7 @@ class ClientTest < Minitest::Test
     should "succeed" do
       stub_ticket_types
 
-      client = Vimaly::Client.new('company_id', 'username', 'password')
+      client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
       type = client.ticket_type('bug')
       assert_equal 'bug', type.name
       assert_equal 1, type.id
@@ -134,7 +134,7 @@ class ClientTest < Minitest::Test
     should "succeed" do
       stub_ticket_types
 
-      client = Vimaly::Client.new('company_id', 'username', 'password')
+      client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
       types = client.ticket_types
       assert_equal 2, types.size
       assert_equal 'bug', types[0].name
@@ -148,7 +148,7 @@ class ClientTest < Minitest::Test
     should "succeed" do
       stub_bins
 
-      client = Vimaly::Client.new('company_id', 'username', 'password')
+      client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
       type = client.bin('Alpha')
       assert_equal 'Alpha', type.name
       assert_equal 1, type.id
@@ -159,7 +159,7 @@ class ClientTest < Minitest::Test
     should "succeed" do
       stub_bins
 
-      client = Vimaly::Client.new('company_id', 'username', 'password')
+      client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
       bins = client.bins
 
       assert_equal 2, bins.size
@@ -177,7 +177,7 @@ class ClientTest < Minitest::Test
       stub_tickets_in_bin
       stub_custom_fields
 
-      @client = Vimaly::Client.new('company_id', 'username', 'password')
+      @client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
     end
 
     should 'succeed for all tickets' do
@@ -210,7 +210,7 @@ class ClientTest < Minitest::Test
   private
 
   def stub_bins
-    stub_request(:get, %r{#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/bins}).to_return(
+    stub_request(:get, %r{#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/bins}).to_return(
       status: 200,
       body: [{name: 'Alpha', _id: 1}, {name: 'Beta', _id: 2}]
     )
@@ -221,20 +221,20 @@ class ClientTest < Minitest::Test
       status: 200,
       body: [{name: 'bug', _id: 1}, {name: 'feature', _id: 2}]
     }
-    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/ticket-types").to_return(
+    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/ticket-types").to_return(
       default_response.merge(overrides)
     )
   end
 
   def stub_custom_fields
-    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/custom-fields").to_return(
+    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/custom-fields").to_return(
         status: 200,
         body: [{name: 'First seen', _id: 1, type: 1}, {name: 'Last seen', _id: 2, type: 1}]
     )
   end
 
   def stub_next_ticket_id
-    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/ids?amount=1").to_return(
+    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/ids?amount=1").to_return(
       status: 200,
       body: [13]
     )
@@ -242,21 +242,21 @@ class ClientTest < Minitest::Test
 
   def stub_create_ticket
     request_body = "{\"name\":\"title\",\"description\":\"description\",\"rtformat\":\"text\",\"ticketType_id\":1,\"bin_id\":1}"
-    stub_request(:post, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/tickets/13").
+    stub_request(:post, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/tickets/13").
       with(body: request_body).
       to_return(status: 200, body: "")
   end
 
   def stub_update_ticket
     request_body = "{\"name\":\"updated title\",\"description\":\"updated description\"}"
-    stub_request(:put, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/tickets/123").
+    stub_request(:put, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/tickets/123").
         with(body: request_body).
         to_return(status: 200, body: "")
   end
 
   def stub_update_ticket_custom
     request_body = "{\"name\":\"updated title\",\"description\":\"updated description\",\"customFields.2\":\"2016-01-20\"}"
-    stub_request(:put, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/tickets/123").
+    stub_request(:put, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/tickets/123").
         with(body: request_body).
         to_return(status: 200, body: "")
   end
@@ -266,13 +266,13 @@ class ClientTest < Minitest::Test
       'customFields': {'1': "2016-01-01",
                         '2': "2016-01-15"}}.to_json
 
-    stub_request(:post, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/tickets/13").
+    stub_request(:post, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/tickets/13").
         with(body: request_body).
         to_return(status: 200, body: "")
   end
 
   def stub_tickets_in_bin
-    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/1/company_id/tickets?bin_id=1").
+    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/tickets?bin_id=1").
         to_return(status: 200, body: TEST_TICKETS.to_json)
   end
 

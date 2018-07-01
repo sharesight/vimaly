@@ -8,10 +8,10 @@ module Vimaly
     VIMALY_ROOT_URL = "https://o1.vimaly.com"
     CUSTOM_FIELD_TYPES = [::NilClass, ::String, ::Float, ::Integer, ::Array, ::Date]
 
-    def initialize(company_id, username, password, logger=nil)
+    def initialize(company_id, user_credentials: nil, auth_key: nil, logger: nil)
       @company_id = company_id
-      @username = username
-      @password = password
+      @user_credentials = user_credentials
+      @auth_key = auth_key
       @logger = logger
 
       @bin_tickets = {}
@@ -139,8 +139,8 @@ module Vimaly
     end
 
     def get(api_path)
-      response = faraday.get("/rest/1/#{@company_id}#{api_path}") do |request|
-        request.headers.update({ accept: 'application/json', content_type: 'application/json' })
+      response = faraday.get("/rest/2/#{@company_id}#{api_path}") do |request|
+        update_request_headers(request)
       end
       unless response.success?
         raise Vimaly::ConnectionError.new("Vimaly #{api_path} call failed with response #{response.status}")
@@ -149,22 +149,27 @@ module Vimaly
     end
 
     def post(api_path, json)
-      faraday.post("/rest/1/#{@company_id}#{api_path}", json) do |request|
-        request.headers.update({ accept: 'application/json', content_type: 'application/json' })
+      faraday.post("/rest/2/#{@company_id}#{api_path}", json) do |request|
+        update_request_headers(request)
       end
     end
 
     def put(api_path, json)
-      faraday.put("/rest/1/#{@company_id}#{api_path}", json) do |request|
-        request.headers.update({ accept: 'application/json', content_type: 'application/json' })
+      faraday.put("/rest/2/#{@company_id}#{api_path}", json) do |request|
+        update_request_headers(request)
       end
     end
 
     def faraday
       @faraday ||= Faraday.new(VIMALY_ROOT_URL).tap do |connection|
-        connection.basic_auth(@username, @password)
+        connection.basic_auth(@user_credentials[:username], @user_credentials[:password]) if @user_credentials
         connection.request(:json)
       end
+    end
+
+    def update_request_headers(request)
+      request.headers.update({ accept: 'application/json', content_type: 'application/json' })
+      request.headers.update({ authorization: "bearer #{@auth_key}" }) if @auth_key
     end
 
     def log_warn(s)
