@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.4.0
+
+ * support API version 2 [#10](https://github.com/sharesight/vimaly/pull/10)
+
 ## 0.3.1
 
  * use Ruby `2.5.1` [#9](https://github.com/sharesight/vimaly/pull/9)
