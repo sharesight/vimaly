@@ -31,7 +31,7 @@ module Vimaly
       response = post("/tickets/#{next_ticket_id}", ticket_to_json)
       case response.status
       when 200..299
-        true
+        next_ticket_id
       else
         log_warn "status: #{response.status}"
         log_warn "        #{response.inspect}"
@@ -43,6 +43,18 @@ module Vimaly
       ticket = Ticket.new(other_fields)
 
       response = put("/tickets/#{id}", ticket.to_json(custom_field_name_map, true))
+      case response.status
+      when 200..299
+        true
+      else
+        log_warn "status: #{response.status}"
+        log_warn "        #{response.inspect}"
+        false
+      end
+    end
+
+    def add_attachment(ticket_id, file_name, file_content_type, file_content)
+      response = post("/tickets/#{ticket_id}/attachments?name=#{file_name}", file_content, { content_type: file_content_type })
       case response.status
       when 200..299
         true
@@ -148,9 +160,9 @@ module Vimaly
       JSON.parse(response.body)
     end
 
-    def post(api_path, json)
-      faraday.post("/rest/2/#{@company_id}#{api_path}", json) do |request|
-        update_request_headers(request)
+    def post(api_path, content, headers={})
+      faraday.post("/rest/2/#{@company_id}#{api_path}", content) do |request|
+        update_request_headers(request, headers)
       end
     end
 
@@ -167,9 +179,10 @@ module Vimaly
       end
     end
 
-    def update_request_headers(request)
+    def update_request_headers(request, headers={})
       request.headers.update({ accept: 'application/json', content_type: 'application/json' })
       request.headers.update({ authorization: "bearer #{@auth_key}" }) if @auth_key
+      request.headers.update(headers)
     end
 
     def log_warn(s)
