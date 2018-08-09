@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.0
+
+ * add support for adding attachments to tickets [#11](https://github.com/sharesight/vimaly/pull/11)
+
 ## 0.4.0
 
  * support API version 2 [#10](https://github.com/sharesight/vimaly/pull/10)
