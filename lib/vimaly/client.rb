@@ -45,7 +45,7 @@ module Vimaly
       response = put("/tickets/#{id}", ticket.to_json(custom_field_name_map, true))
       case response.status
       when 200..299
-        true
+        id
       else
         log_warn "status: #{response.status}"
         log_warn "        #{response.inspect}"

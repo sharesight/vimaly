@@ -98,22 +98,24 @@ class ClientTest < Minitest::Test
     should "succeed for standard params" do
       stub_update_ticket
 
-      @client.update_ticket(
-          123,
-          title: 'updated title',
-          description: 'updated description'
+      id = @client.update_ticket(
+        123,
+        title: 'updated title',
+        description: 'updated description'
       )
+      assert_equal 123, id
     end
 
     should "succeed for custom params" do
       stub_update_ticket_custom
 
-      @client.update_ticket(
-          123,
-          title: 'updated title',
-          description: 'updated description',
-          'Last seen': Date.new(2016,1,20)
+      id = @client.update_ticket(
+        123,
+        title: 'updated title',
+        description: 'updated description',
+        'Last seen': Date.new(2016,1,20)
       )
+      assert_equal 123, id
     end
   end # updating tickets
 
