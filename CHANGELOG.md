@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.1
+
+ * return the ticket-id after updating a ticket [#12](https://github.com/sharesight/vimaly/pull/12)
+
 ## 0.5.0
 
  * add support for adding attachments to tickets [#11](https://github.com/sharesight/vimaly/pull/11)
