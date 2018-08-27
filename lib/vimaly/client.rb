@@ -27,11 +27,12 @@ module Vimaly
         merge(others)
       )
 
+      ticket_id = next_ticket_id
       ticket_to_json = ticket.to_json(custom_field_name_map)
-      response = post("/tickets/#{next_ticket_id}", ticket_to_json)
+      response = post("/tickets/#{ticket_id}", ticket_to_json)
       case response.status
       when 200..299
-        next_ticket_id
+        ticket_id
       else
         log_warn "status: #{response.status}"
         log_warn "        #{response.inspect}"
