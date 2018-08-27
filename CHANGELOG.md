@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.2
+
+ * return the correct ticket-id after creating a ticket [#13](https://github.com/sharesight/vimaly/pull/13)
+
 ## 0.5.1
 
  * return the ticket-id after updating a ticket [#12](https://github.com/sharesight/vimaly/pull/12)
