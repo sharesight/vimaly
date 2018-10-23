@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.3
+
+ * add support for Ruby `2.5.3` [#14](https://github.com/sharesight/vimaly/pull/14)
+
 ## 0.5.2
 
  * return the correct ticket-id after creating a ticket [#13](https://github.com/sharesight/vimaly/pull/13)
