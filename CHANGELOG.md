@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.0
+
+ * allow adding attachments with providing a content-type [#15](https://github.com/sharesight/vimaly/pull/15)
+
 ## 0.5.3
 
  * add support for Ruby `2.5.3` [#14](https://github.com/sharesight/vimaly/pull/14)
