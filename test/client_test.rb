@@ -126,7 +126,7 @@ class ClientTest < Minitest::Test
 
     should "succeed" do
       stub_add_attachment
-      @client.add_attachment('ticket-id-13', 'filename.txt', 'plain/text', 'some content in a text file')
+      @client.add_attachment('ticket-id-13', 'filename.txt', 'some content in a text file', content_type: 'plain/text')
     end
   end # adding an attachment to a ticket
 

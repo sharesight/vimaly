@@ -54,8 +54,8 @@ module Vimaly
       end
     end
 
-    def add_attachment(ticket_id, file_name, file_content_type, file_content)
-      response = post("/tickets/#{ticket_id}/attachments?name=#{file_name}", file_content, { content_type: file_content_type })
+    def add_attachment(ticket_id, file_name, file_content, request_options={})
+      response = post("/tickets/#{ticket_id}/attachments?name=#{file_name}", file_content, request_options)
       case response.status
       when 200..299
         true
