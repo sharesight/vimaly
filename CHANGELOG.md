@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.1
+
+* Update for Ruby 2.6.3 compatibility.
+
 ## 1.0.0
 
  * allow adding attachments with providing a content-type [#15](https://github.com/sharesight/vimaly/pull/15)
