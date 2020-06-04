@@ -55,7 +55,7 @@ module Vimaly
     end
 
     def add_attachment(ticket_id, file_name, file_content, request_options={})
-      response = post("/tickets/#{ticket_id}/attachments?name=#{file_name}", file_content, request_options)
+      response = post("/tickets/#{ticket_id}/attachments?name=#{CGI.escape(file_name)}", file_content, request_options)
       case response.status
       when 200..299
         true

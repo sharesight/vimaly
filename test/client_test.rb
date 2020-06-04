@@ -125,8 +125,17 @@ class ClientTest < Minitest::Test
     end
 
     should "succeed" do
-      stub_add_attachment
+      stub_add_attachment('filename.txt')
       @client.add_attachment('ticket-id-13', 'filename.txt', 'some content in a text file', content_type: 'plain/text')
+    end
+
+    context 'with an unfriendly filename' do
+      should 'pass URI friendly attachment name and succeed' do
+        filename = 'unfriendly ticket #1 attachment.txt'
+        stub_add_attachment(CGI.escape(filename))
+        @client.add_attachment('ticket-id-13', 'unfriendly ticket #1 attachment.txt',
+                              'some content in a text file', content_type: 'plan/text')
+      end
     end
   end # adding an attachment to a ticket
 
@@ -258,9 +267,9 @@ class ClientTest < Minitest::Test
       to_return(status: 200, body: "")
   end
 
-  def stub_add_attachment
+  def stub_add_attachment(filename)
     request_body = "some content in a text file"
-    stub_request(:post, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/tickets/ticket-id-13/attachments?name=filename.txt").
+    stub_request(:post, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/tickets/ticket-id-13/attachments?name=#{filename}").
       with(body: request_body, headers: { 'Content-Type' => 'plain/text' }).
       to_return(status: 200, body: "")
   end
