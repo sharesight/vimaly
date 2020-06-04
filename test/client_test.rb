@@ -133,8 +133,7 @@ class ClientTest < Minitest::Test
       should 'pass URI friendly attachment name and succeed' do
         filename = 'unfriendly ticket #1 attachment.txt'
         stub_add_attachment(CGI.escape(filename))
-        @client.add_attachment('ticket-id-13', 'unfriendly ticket #1 attachment.txt',
-                              'some content in a text file', content_type: 'plan/text')
+        @client.add_attachment('ticket-id-13', filename, 'some content in a text file', content_type: 'plan/text')
       end
     end
   end # adding an attachment to a ticket
@@ -232,14 +231,14 @@ class ClientTest < Minitest::Test
   def stub_bins
     stub_request(:get, %r{#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/bins}).to_return(
       status: 200,
-      body: [{name: 'Alpha', _id: 1}, {name: 'Beta', _id: 2}]
+      body: [{name: 'Alpha', _id: 1}, {name: 'Beta', _id: 2}].to_json
     )
   end
 
   def stub_ticket_types(overrides={})
     default_response = {
       status: 200,
-      body: [{name: 'bug', _id: 1}, {name: 'feature', _id: 2}]
+      body: [{name: 'bug', _id: 1}, {name: 'feature', _id: 2}].to_json
     }
     stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/ticket-types").to_return(
       default_response.merge(overrides)
@@ -249,14 +248,14 @@ class ClientTest < Minitest::Test
   def stub_custom_fields
     stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/custom-fields").to_return(
         status: 200,
-        body: [{name: 'First seen', _id: 1, type: 1}, {name: 'Last seen', _id: 2, type: 1}]
+        body: [{name: 'First seen', _id: 1, type: 1}, {name: 'Last seen', _id: 2, type: 1}].to_json
     )
   end
 
   def stub_next_ticket_id
     stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/ids?amount=1").to_return(
       status: 200,
-      body: [13]
+      body: [13].to_json
     )
   end
 
@@ -270,7 +269,7 @@ class ClientTest < Minitest::Test
   def stub_add_attachment(filename)
     request_body = "some content in a text file"
     stub_request(:post, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/tickets/ticket-id-13/attachments?name=#{filename}").
-      with(body: request_body, headers: { 'Content-Type' => 'plain/text' }).
+      with(body: request_body).
       to_return(status: 200, body: "")
   end
 
