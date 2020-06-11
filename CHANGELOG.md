@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.2
+
+* Fix unfriendly filenames not attaching to Vimaly tickets [#17](https://github.com/sharesight/vimaly/pull/17)
+
 ## 1.0.1
 
 * Update for Ruby 2.6.3 compatibility.
