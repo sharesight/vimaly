@@ -189,7 +189,7 @@ class ClientTest < Minitest::Test
     end
   end
 
-  context 'load tickets from bin' do
+  context 'tickets_in_bin' do
     setup do
       stub_bins
       stub_ticket_types
@@ -223,8 +223,51 @@ class ClientTest < Minitest::Test
       assert_equal 'Alpha', all_tickets.last.bin.name
       assert_equal 'bug', all_tickets.last.ticket_type.name
     end
+  end # tickets_in_bin
 
-  end
+  context 'search_tickets' do
+    setup do
+      stub_bins
+      stub_ticket_types
+      stub_custom_fields
+
+      @client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
+    end
+
+    should 'succeed with the default state' do
+      stub_search_tickets('query_string')
+
+      all_tickets = @client.search_tickets('query_string')
+
+      assert_equal 2, all_tickets.size
+      assert_equal 'Test ticket 1', all_tickets.first.title
+      assert_equal 'This is a test', all_tickets.first.description
+      assert_equal 'Alpha', all_tickets.first.bin.name
+      assert_equal 'bug', all_tickets.first.ticket_type.name
+
+      assert_equal 'Other test ticket 2', all_tickets.last.title
+      assert_equal 'This is another test', all_tickets.last.description
+      assert_equal 'Alpha', all_tickets.last.bin.name
+      assert_equal 'bug', all_tickets.last.ticket_type.name
+    end
+
+    should 'succeed with the requested state' do
+      stub_search_tickets('query_string', state: 'any')
+
+      all_tickets = @client.search_tickets('query_string', state: 'any')
+
+      assert_equal 2, all_tickets.size
+      assert_equal 'Test ticket 1', all_tickets.first.title
+      assert_equal 'This is a test', all_tickets.first.description
+      assert_equal 'Alpha', all_tickets.first.bin.name
+      assert_equal 'bug', all_tickets.first.ticket_type.name
+
+      assert_equal 'Other test ticket 2', all_tickets.last.title
+      assert_equal 'This is another test', all_tickets.last.description
+      assert_equal 'Alpha', all_tickets.last.bin.name
+      assert_equal 'bug', all_tickets.last.ticket_type.name
+    end
+  end # search_tickets
 
   private
 
@@ -302,4 +345,8 @@ class ClientTest < Minitest::Test
         to_return(status: 200, body: TEST_TICKETS.to_json)
   end
 
+  def stub_search_tickets(query_string, state: 'active')
+    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/ticket-search?text=#{query_string}&state=#{state}").
+        to_return(status: 200, body: TEST_TICKETS.to_json)
+  end
 end

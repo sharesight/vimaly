@@ -54,6 +54,15 @@ module Vimaly
       end
     end
 
+    def search_tickets(query_string, state: 'active')
+      ticket_type_map = Hash[ticket_types.map { |t| [t.id, t] }]
+      bin_map = Hash[bins.map { |b| [b.id, b] }]
+
+      get("/ticket-search?text=#{query_string}&state=#{state}").map do |ticket_data|
+        Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
+      end
+    end
+
     def add_attachment(ticket_id, file_name, file_content, request_options={})
       response = post("/tickets/#{ticket_id}/attachments?name=#{CGI.escape(file_name)}", file_content, request_options)
       case response.status
@@ -113,7 +122,6 @@ module Vimaly
       get("/tickets?bin_id=#{bin_id}").map do |ticket_data|
         Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
       end
-
     end
 
     def matching_tickets_in_named_bin(bin_name, title_matcher)
