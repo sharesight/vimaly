@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.0
+
+* add support for searching tickets [#19](https://github.com/sharesight/vimaly/pull/19)
+
 ## 1.0.2
 
 * Fix unfriendly filenames not attaching to Vimaly tickets [#17](https://github.com/sharesight/vimaly/pull/17)
