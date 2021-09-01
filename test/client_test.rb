@@ -181,11 +181,15 @@ class ClientTest < Minitest::Test
       client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
       bins = client.bins
 
-      assert_equal 2, bins.size
+      assert_equal 4, bins.size # API called twice now (2 pages)
       assert_equal 'Alpha', bins[0].name
       assert_equal 1, bins[0].id
       assert_equal 'Beta', bins[1].name
       assert_equal 2, bins[1].id
+      assert_equal 'Alpha', bins[2].name
+      assert_equal 1, bins[2].id
+      assert_equal 'Beta', bins[3].name
+      assert_equal 2, bins[3].id
     end
   end
 

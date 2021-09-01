@@ -86,7 +86,11 @@ module Vimaly
 
     def bins
       @bins ||= begin
-        get('/bins?max-results=500').map do |bin_data|
+        per_page = 500
+        data = (0..1).inject([]) do |list, page|
+          list += get("/bins?max-results=#{per_page}&page-token=#{page * 500}")
+        end
+        data.map do |bin_data|
           Bin.new(bin_data['_id'], bin_data['name'])
         end
       end
