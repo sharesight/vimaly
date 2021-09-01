@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.1
+
+* add support for more than 500 bins [#20](https://github.com/sharesight/vimaly/pull/20)
+
 ## 1.1.0
 
 * add support for searching tickets [#19](https://github.com/sharesight/vimaly/pull/19)
