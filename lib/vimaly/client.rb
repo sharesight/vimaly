@@ -84,14 +84,25 @@ module Vimaly
       end
     end
 
-    def bins
+    def bins(options={})
       @bins ||= begin
-        per_page = 500
-        data = (0..1).inject([]) do |list, page|
-          list += get("/bins?max-results=#{per_page}&page-token=#{page * 500}")
+        # 500 is the vimaly limit
+        bins_per_request = options[:bins_per_request] || 500
+        # 5000 is just a random value here; hopefully we never reach this limit
+        max_number_of_bins = options[:max_number_of_bins] || 5000
+
+        bins = []
+        current_page = 0
+        while bins.size < max_number_of_bins
+          # those request parameters are not documented, maybe this gets added at some
+          # point to https://vimaly.com/public/rest-help.html#Bins
+          chunk_of_bins = get("/bins?max-results=#{bins_per_request}&page-token=#{current_page * bins_per_request}")
+          current_page += 1
+          bins += chunk_of_bins
+          break if chunk_of_bins.size < bins_per_request
         end
-        data.map do |bin_data|
-          Bin.new(bin_data['_id'], bin_data['name'])
+        bins.map do |bin|
+          Bin.new(bin['_id'], bin['name'])
         end
       end
     end

@@ -175,21 +175,56 @@ class ClientTest < Minitest::Test
   end
 
   context "loading bins" do
-    should "succeed" do
-      stub_bins
+    setup do
+      # 1st page of 2 bins
+      stub_request(:get, %r{#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/bins\?max-results=2\&page-token=0}).to_return(
+        status: 200,
+        body: [{name: 'Alpha', _id: 1}, {name: 'Beta', _id: 2}].to_json
+      )
+      # 2nd page of 2 bins
+      stub_request(:get, %r{#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/bins\?max-results=2\&page-token=2}).to_return(
+        status: 200,
+        body: [{name: 'Gamma', _id: 3}, {name: 'Delta', _id: 4}].to_json
+      )
+      # 3rd page of 2 bins, returning only 1 (indicating the last page)
+      stub_request(:get, %r{#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/bins\?max-results=2\&page-token=4}).to_return(
+        status: 200,
+        body: [{name: 'Epsilon', _id: 5}].to_json
+      )
+    end
 
+    should "succeed and load all available bins" do
       client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
-      bins = client.bins
+      bins = client.bins(bins_per_request: 2)
 
-      assert_equal 4, bins.size # API called twice now (2 pages)
+      # API called 3 times now (3 pages)
+      assert_equal 5, bins.size
       assert_equal 'Alpha', bins[0].name
       assert_equal 1, bins[0].id
       assert_equal 'Beta', bins[1].name
       assert_equal 2, bins[1].id
-      assert_equal 'Alpha', bins[2].name
-      assert_equal 1, bins[2].id
-      assert_equal 'Beta', bins[3].name
-      assert_equal 2, bins[3].id
+      assert_equal 'Gamma', bins[2].name
+      assert_equal 3, bins[2].id
+      assert_equal 'Delta', bins[3].name
+      assert_equal 4, bins[3].id
+      assert_equal 'Epsilon', bins[4].name
+      assert_equal 5, bins[4].id
+    end
+
+    should "load the max requested number of bins" do
+      client = Vimaly::Client.new('company_id', user_credentials: { username: 'username', password: 'password' })
+      bins = client.bins(bins_per_request: 2, max_number_of_bins: 4)
+
+      # API called 2 times now
+      assert_equal 4, bins.size
+      assert_equal 'Alpha', bins[0].name
+      assert_equal 1, bins[0].id
+      assert_equal 'Beta', bins[1].name
+      assert_equal 2, bins[1].id
+      assert_equal 'Gamma', bins[2].name
+      assert_equal 3, bins[2].id
+      assert_equal 'Delta', bins[3].name
+      assert_equal 4, bins[3].id
     end
   end
 
