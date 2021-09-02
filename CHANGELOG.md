@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.2.0
+
+* add support for more than 500 bins, refactored and options added [#21](https://github.com/sharesight/vimaly/pull/21)
+
 ## 1.1.1
 
 * add support for more than 500 bins [#20](https://github.com/sharesight/vimaly/pull/20)
