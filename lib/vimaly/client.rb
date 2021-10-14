@@ -54,14 +54,25 @@ module Vimaly
       end
     end
 
-    def search_tickets(query_string, state: 'active', max_results: 200)
+    def search_tickets(query_string, state: 'active', max_results: 500)
       ticket_type_map = Hash[ticket_types.map { |t| [t.id, t] }]
       bin_map = Hash[bins.map { |b| [b.id, b] }]
 
-      # The max-results default is already 200. The maximum is supposedly 500
-      get("/ticket-search?text=#{query_string}&state=#{state}&max-results=#{max_results}").map do |ticket_data|
-        Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
+      # Without max-results the default is 200.
+      # The max is 500, so will do 10 requests to get our maximum of 5000 tickets.
+
+      response_data = []
+      i = 0
+
+      while (max_results * i) <= 5000
+        response_data << get("/ticket-search?text=#{query_string}&state=#{state}&max-results=#{max-results}&page-token=#{i * max_results}").map do |ticket_data|
+          Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
+        end
+
+        i += 1
       end
+
+      response_data
     end
 
     def add_attachment(ticket_id, file_name, file_content, request_options={})
