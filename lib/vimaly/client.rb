@@ -54,11 +54,12 @@ module Vimaly
       end
     end
 
-    def search_tickets(query_string, state: 'active')
+    def search_tickets(query_string, state: 'active', max_results: 200)
       ticket_type_map = Hash[ticket_types.map { |t| [t.id, t] }]
       bin_map = Hash[bins.map { |b| [b.id, b] }]
 
-      get("/ticket-search?text=#{query_string}&state=#{state}").map do |ticket_data|
+      # The max-results default is already 200. The maximum is supposedly 500
+      get("/ticket-search?text=#{query_string}&state=#{state}&max-results=#{max_results}").map do |ticket_data|
         Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
       end
     end
