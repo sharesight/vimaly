@@ -58,21 +58,33 @@ module Vimaly
       ticket_type_map = Hash[ticket_types.map { |t| [t.id, t] }]
       bin_map = Hash[bins.map { |b| [b.id, b] }]
 
-      # Without max-results the default is 200.
-      # The max is 500, so will do 10 requests to get our maximum of 5000 tickets.
-
-      response_data = []
+      tickets = []
       i = 0
 
-      while (max_results * i) <= 5000
-        response_data << get("/ticket-search?text=#{query_string}&state=#{state}&max-results=#{max-results}&page-token=#{i * max_results}").map do |ticket_data|
-          Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
+      while (i * max_results) <= 5000
+        # Without max-results the request defaults to 200.
+        # The maximum max-results is 500, so will do 10 requests to get our maximum of 5000 tickets.
+        search_response = get("/ticket-search?text=#{query_string}&state=#{state}&max-results=#{max_results}&page-token=#{i * max_results}")
+
+        response_tickets = if search_response.instance_of? Array
+          search_response.map do |ticket_data|
+            Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
+          end
+        elsif search_response.instance_of? Hash # Will be a hash when only 1 ticket is returned. (most likely because max_results is 1)
+          Ticket.from_vimaly(search_response, ticket_type_map, bin_map, custom_fields)
         end
 
+        break unless search_response # If reponse is nil then we know we've got all the data
+
+        unless search_response.instance_of? Hash # If we get a hash we should continue to search
+          break if response_tickets.size < max_results # Can finish search because we've returned all there is.
+        end
+
+        tickets << response_tickets
         i += 1
       end
 
-      response_data
+      tickets
     end
 
     def add_attachment(ticket_id, file_name, file_content, request_options={})
