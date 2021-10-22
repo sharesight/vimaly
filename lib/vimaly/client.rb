@@ -54,33 +54,32 @@ module Vimaly
       end
     end
 
-    def search_tickets(query_string, state: 'active', max_results: 500)
+    def search_tickets(query_string, state: 'active')
       ticket_type_map = Hash[ticket_types.map { |t| [t.id, t] }]
       bin_map = Hash[bins.map { |b| [b.id, b] }]
 
       tickets = []
       i = 0
 
-      while (i * max_results) <= 5000
+      while (i * 500) <= 5000
         # Without max-results the request defaults to 200.
         # The maximum max-results is 500, so will do 10 requests to get our maximum of 5000 tickets.
-        search_response = get("/ticket-search?text=#{query_string}&state=#{state}&max-results=#{max_results}&page-token=#{i * max_results}")
+        search_response = get("/ticket-search?text=#{query_string}&state=#{state}&max-results=500&page-token=#{i * 500}")
 
-        response_tickets = if search_response.instance_of? Array
-          search_response.map do |ticket_data|
-            Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
-          end
-        elsif search_response.instance_of? Hash # Will be a hash when only 1 ticket is returned. (most likely because max_results is 1)
-          Ticket.from_vimaly(search_response, ticket_type_map, bin_map, custom_fields)
+        response_tickets = case search_response
+          when Array
+            search_response.map do |ticket_data|
+              Ticket.from_vimaly(ticket_data, ticket_type_map, bin_map, custom_fields)
+            end
+          when Hash # Will be a hash when only 1 ticket is returned.
+            [Ticket.from_vimaly(search_response, ticket_type_map, bin_map, custom_fields)]
+          else # If reponse is nil then we know we've got all the data
+            break
         end
 
-        break unless search_response # If reponse is nil then we know we've got all the data
+        tickets.concat(response_tickets)
+        break if response_tickets.size < 500 # Can finish search because we've returned all there is.
 
-        unless search_response.instance_of? Hash # If we get a hash we should continue to search
-          break if response_tickets.size < max_results # Can finish search because we've returned all there is.
-        end
-
-        tickets << response_tickets
         i += 1
       end
 

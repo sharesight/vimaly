@@ -302,9 +302,9 @@ class ClientTest < Minitest::Test
     end
 
     should 'succeed with the default state' do
-      stub_search_tickets_request('query_string', max_results: 1)
+      stub_search_tickets_request('query_string')
 
-      all_tickets = @client.search_tickets('query_string', max_results: 1)
+      all_tickets = @client.search_tickets('query_string')
 
       assert_equal 5, all_tickets.size
       assert_equal 'Test ticket 1', all_tickets.first.title
@@ -319,9 +319,9 @@ class ClientTest < Minitest::Test
     end
 
     should 'succeed with the requested state' do
-      stub_search_tickets_request('query_string', max_results: 1)
+      stub_search_tickets_request('query_string')
 
-      all_tickets = @client.search_tickets('query_string', max_results: 1)
+      all_tickets = @client.search_tickets('query_string')
 
       assert_equal 5, all_tickets.size
       assert_equal 'Test ticket 1', all_tickets.first.title
@@ -412,10 +412,10 @@ class ClientTest < Minitest::Test
         to_return(status: 200, body: TEST_TICKETS.to_json)
   end
 
-  def stub_search_tickets_request(query_string, state: 'active', max_results: 1)
+  def stub_search_tickets_request(query_string, state: 'active')
     (0..5).each do |page_token|
-      stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/ticket-search?text=#{query_string}&state=#{state}&max-results=#{max_results}&page-token=#{page_token}").
-          to_return(status: 200, body: TEST_TICKETS[page_token].to_json)
+      stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/ticket-search?text=#{query_string}&state=#{state}&max-results=500&page-token=#{page_token}").
+          to_return(status: 200, body: TEST_TICKETS.to_json)
     end
   end
 end
