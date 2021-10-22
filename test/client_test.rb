@@ -3,18 +3,46 @@ require 'test_helper'
 class ClientTest < Minitest::Test
 
   TEST_TICKETS = [
-      { '_id' => '1',
-        'name' => 'Test ticket 1',
-        'description' => 'This is a test',
-        'bin_id' => '1',
-        'ticketType_id' => '1',
-        'order' => 100},
-      { '_id' => '2',
-        'name' => 'Other test ticket 2',
-        'description' => 'This is another test',
-        'bin_id' => '1',
-        'ticketType_id' => '1',
-        'order' => 101}
+    {
+      '_id' => '1',
+      'name' => 'Test ticket 1',
+      'description' => 'This is a test',
+      'bin_id' => '1',
+      'ticketType_id' => '1',
+      'order' => 100
+    },
+    {
+      '_id' => '2',
+      'name' => 'Other test ticket 2',
+      'description' => 'This is another test',
+      'bin_id' => '1',
+      'ticketType_id' => '1',
+      'order' => 101
+    },
+    {
+      '_id' => '3',
+      'name' => 'Test test 3',
+      'description' => 'This is another test to test the search tickets function',
+      'bin_id' => '1',
+      'ticketType_id' => '1',
+      'order' => 102
+    },
+    {
+      '_id' => '4',
+      'name' => 'Other test test 4',
+      'description' => 'Search tickets test',
+      'bin_id' => '1',
+      'ticketType_id' => '1',
+      'order' => 103
+    },
+    {
+      '_id' => '5',
+      'name' => 'Final Test ticket 5',
+      'description' => 'Another test for search tickets',
+      'bin_id' => '1',
+      'ticketType_id' => '1',
+      'order' => 104
+    }
   ]
 
   context "creating tickets" do
@@ -241,14 +269,14 @@ class ClientTest < Minitest::Test
     should 'succeed for all tickets' do
       all_tickets = @client.tickets_in_bin(1)
 
-      assert_equal 2, all_tickets.size
+      assert_equal 5, all_tickets.size
       assert_equal 'Test ticket 1', all_tickets.first.title
       assert_equal 'This is a test', all_tickets.first.description
       assert_equal 'Alpha', all_tickets.first.bin.name
       assert_equal 'bug', all_tickets.first.ticket_type.name
 
-      assert_equal 'Other test ticket 2', all_tickets.last.title
-      assert_equal 'This is another test', all_tickets.last.description
+      assert_equal 'Final Test ticket 5', all_tickets.last.title
+      assert_equal 'Another test for search tickets', all_tickets.last.description
       assert_equal 'Alpha', all_tickets.last.bin.name
       assert_equal 'bug', all_tickets.last.ticket_type.name
     end
@@ -256,9 +284,9 @@ class ClientTest < Minitest::Test
     should 'succeed with matcher' do
       all_tickets = @client.matching_tickets_in_bin(1, /Other/)
 
-      assert_equal 1, all_tickets.size
-      assert_equal 'Other test ticket 2', all_tickets.last.title
-      assert_equal 'This is another test', all_tickets.last.description
+      assert_equal 2, all_tickets.size
+      assert_equal 'Other test test 4', all_tickets.last.title
+      assert_equal 'Search tickets test', all_tickets.last.description
       assert_equal 'Alpha', all_tickets.last.bin.name
       assert_equal 'bug', all_tickets.last.ticket_type.name
     end
@@ -274,35 +302,35 @@ class ClientTest < Minitest::Test
     end
 
     should 'succeed with the default state' do
-      stub_search_tickets('query_string')
+      stub_search_tickets_request('query_string')
 
       all_tickets = @client.search_tickets('query_string')
 
-      assert_equal 2, all_tickets.size
+      assert_equal 5, all_tickets.size
       assert_equal 'Test ticket 1', all_tickets.first.title
       assert_equal 'This is a test', all_tickets.first.description
       assert_equal 'Alpha', all_tickets.first.bin.name
       assert_equal 'bug', all_tickets.first.ticket_type.name
 
-      assert_equal 'Other test ticket 2', all_tickets.last.title
-      assert_equal 'This is another test', all_tickets.last.description
+      assert_equal 'Final Test ticket 5', all_tickets.last.title
+      assert_equal 'Another test for search tickets', all_tickets.last.description
       assert_equal 'Alpha', all_tickets.last.bin.name
       assert_equal 'bug', all_tickets.last.ticket_type.name
     end
 
     should 'succeed with the requested state' do
-      stub_search_tickets('query_string', state: 'any')
+      stub_search_tickets_request('query_string')
 
-      all_tickets = @client.search_tickets('query_string', state: 'any')
+      all_tickets = @client.search_tickets('query_string')
 
-      assert_equal 2, all_tickets.size
+      assert_equal 5, all_tickets.size
       assert_equal 'Test ticket 1', all_tickets.first.title
       assert_equal 'This is a test', all_tickets.first.description
       assert_equal 'Alpha', all_tickets.first.bin.name
       assert_equal 'bug', all_tickets.first.ticket_type.name
 
-      assert_equal 'Other test ticket 2', all_tickets.last.title
-      assert_equal 'This is another test', all_tickets.last.description
+      assert_equal 'Final Test ticket 5', all_tickets.last.title
+      assert_equal 'Another test for search tickets', all_tickets.last.description
       assert_equal 'Alpha', all_tickets.last.bin.name
       assert_equal 'bug', all_tickets.last.ticket_type.name
     end
@@ -384,8 +412,10 @@ class ClientTest < Minitest::Test
         to_return(status: 200, body: TEST_TICKETS.to_json)
   end
 
-  def stub_search_tickets(query_string, state: 'active')
-    stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/ticket-search?text=#{query_string}&state=#{state}").
-        to_return(status: 200, body: TEST_TICKETS.to_json)
+  def stub_search_tickets_request(query_string, state: 'active')
+    (0..5).each do |page_token|
+      stub_request(:get, "#{Vimaly::Client::VIMALY_ROOT_URL}/rest/2/company_id/ticket-search?text=#{query_string}&state=#{state}&max-results=500&page-token=#{page_token}").
+          to_return(status: 200, body: TEST_TICKETS.to_json)
+    end
   end
 end
